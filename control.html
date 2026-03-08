@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+
+<style>
+
+body{
+
+font-family:Arial;
+background:#111;
+color:white;
+padding:40px;
+
+}
+
+#preview{
+
+width:640px;
+height:360px;
+border:2px solid #444;
+margin-bottom:30px;
+
+}
+
+button{
+
+font-size:20px;
+padding:10px 30px;
+margin-right:10px;
+
+}
+
+input{
+
+font-size:20px;
+width:80px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>CONTROL CONTADOR ELECCIONES</h2>
+
+<iframe id="preview" src="overlayhora.html"></iframe>
+
+<br>
+
+<label>
+Que salga el contador cada (minutos)
+</label>
+
+<br><br>
+
+<input type="number" id="freq" value="30">
+
+<br><br>
+
+<button onclick="start()">ON</button>
+
+<button onclick="stop()">OFF</button>
+
+
+
+<script>
+
+const ably = new Ably.Realtime('YOURABLYKEY');
+
+const channel = ably.channels.get("vmix-hora");
+
+function start(){
+
+const freq=document.getElementById("freq").value;
+
+channel.publish("control",{
+
+type:"on",
+freq:parseInt(freq)
+
+});
+
+}
+
+function stop(){
+
+channel.publish("control",{
+
+type:"off"
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
