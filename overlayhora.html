@@ -1,38 +1,55 @@
-<!DOCTYPE html>
-<html>
+<script>
 
-<head>
+const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4")
+const channel = ably.channels.get("vmix-hora")
 
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+let visible=false
 
-</head>
+function hideImmediately(){
 
-<body>
+document.getElementById("countBox").style.opacity="0"
+document.getElementById("logoBox").style.opacity="0"
 
-<div id="canvas">
+}
 
-<div id="countBox">
+hideImmediately()
 
-<div id="countTextTop">
-CIERRE DE VOTACIONES EN
-</div>
 
-<div id="countTextBottom">
-00:00:00
-</div>
 
-</div>
+channel.subscribe("hora",(message)=>{
 
-<div id="logoBox">
-<img src="assets/logo.png" id="logo">
-</div>
+const data=message.data
 
-</div>
 
-<script src="animation.js"></script>
 
-</body>
+if(data.action==="on"){
 
-</html>
+if(visible) return
+
+startSystem(data.freq)
+
+visible=true
+
+}
+
+
+
+if(data.action==="off"){
+
+stopSystem()
+
+visible=false
+
+}
+
+
+
+if(data.action==="freq"){
+
+updateFrequency(data.freq)
+
+}
+
+})
+
+</script>
