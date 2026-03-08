@@ -21,6 +21,8 @@ bogotaOffset=0;
 
 }
 
+updateCounter(); // ← calcula inmediatamente
+
 }
 
 function bogotaNow(){
@@ -58,6 +60,7 @@ setInterval(updateCounter,1000);
 
 function showTimer(){
 
+updateCounter(); // ← recalcula inmediatamente
 box.style.opacity=1;
 
 }
