@@ -56,6 +56,7 @@ setInterval(updateCounter,1000);
 
 function startSystem(){
 
+updateCounter();   // 👈 esto hace que aparezca inmediatamente
 box.style.opacity = 1;
 
 }
