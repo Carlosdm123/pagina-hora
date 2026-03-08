@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-
 <meta charset="UTF-8">
-
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
 
 <style>
@@ -13,7 +12,7 @@ background:#1e1e1e;
 color:white;
 font-family:sans-serif;
 text-align:center;
-padding-top:60px;
+padding-top:40px;
 }
 
 .preview{
@@ -27,7 +26,7 @@ overflow:hidden;
 iframe{
 width:1920px;
 height:1080px;
-transform:scale(0.444);
+transform:scale(.444);
 transform-origin:top left;
 border:none;
 }
@@ -43,9 +42,7 @@ width:60px;
 height:34px;
 }
 
-.switch input{
-display:none;
-}
+.switch input{display:none;}
 
 .slider{
 position:absolute;
@@ -54,21 +51,20 @@ top:0;
 left:0;
 right:0;
 bottom:0;
-background:#444;
-transition:.4s;
+background:#555;
 border-radius:34px;
 }
 
 .slider:before{
-position:absolute;
 content:"";
+position:absolute;
 height:26px;
 width:26px;
 left:4px;
 bottom:4px;
 background:white;
-transition:.4s;
 border-radius:50%;
+transition:.4s;
 }
 
 input:checked + .slider{
@@ -79,17 +75,16 @@ input:checked + .slider:before{
 transform:translateX(26px);
 }
 
-input[type=number]{
-margin-top:20px;
-padding:8px;
-font-size:16px;
-width:120px;
+button{
+margin:10px;
+padding:8px 14px;
+cursor:pointer;
 }
 
-button{
-margin-left:10px;
-padding:8px 16px;
-cursor:pointer;
+input[type=number]{
+padding:6px;
+width:80px;
+font-size:16px;
 }
 
 </style>
@@ -104,12 +99,23 @@ cursor:pointer;
 <iframe src="overlayhora.html"></iframe>
 </div>
 
+<br>
+
+<button onclick="openOverlay()">Abrir overlay</button>
+<button onclick="copyOverlay()">Copiar URL para vMix</button>
+
 <div class="panel">
+
+<br>
 
 <label class="switch">
 <input type="checkbox" id="toggle">
 <span class="slider"></span>
 </label>
+
+<br><br>
+
+Intervalo (minutos)
 
 <br>
 
@@ -121,10 +127,14 @@ cursor:pointer;
 
 <script>
 
-const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4");
-const channel = ably.channels.get("vmix-hora");
+const ably=new Ably.Realtime({
+key:"bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4",
+recover:true
+});
 
-const toggle = document.getElementById("toggle");
+const channel=ably.channels.get("vmix-hora");
+
+const toggle=document.getElementById("toggle");
 
 toggle.addEventListener("change",()=>{
 
@@ -142,12 +152,25 @@ channel.publish("control",{action:"off"});
 
 function setFreq(){
 
-const min = Number(document.getElementById("minutes").value);
+const m=Number(document.getElementById("minutes").value);
 
-channel.publish("control",{
-action:"freq",
-minutes:min
-});
+channel.publish("control",{action:"freq",minutes:m});
+
+}
+
+function openOverlay(){
+
+window.open("overlayhora.html");
+
+}
+
+function copyOverlay(){
+
+const url=location.origin+location.pathname.replace("control.html","overlayhora.html");
+
+navigator.clipboard.writeText(url);
+
+alert("URL copiada para vMix");
 
 }
 
