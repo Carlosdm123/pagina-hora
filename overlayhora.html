@@ -32,7 +32,7 @@ CIERRE DE VOTACIONES EN
 const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4");
 const channel = ably.channels.get("vmix-hora");
 
-channel.subscribe((msg)=>{
+channel.subscribe("control",(msg)=>{
 
 const data = msg.data;
 
