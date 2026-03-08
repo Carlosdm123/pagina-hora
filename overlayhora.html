@@ -36,19 +36,13 @@ recover:true
 
 const channel = ably.channels.get("vmix-hora");
 
-ably.connection.on(state=>{
-console.log("Ably:",state.current);
-});
-
 channel.subscribe("control",(msg)=>{
 
-const data=msg.data;
+const data = msg.data;
 
-if(data.action==="on") startSystem();
+if(data.action === "on") startSystem();
 
-if(data.action==="off") stopSystem();
-
-if(data.action==="freq") updateFrequency(data.minutes);
+if(data.action === "off") stopSystem();
 
 });
 
