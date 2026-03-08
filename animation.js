@@ -1,78 +1,68 @@
-const ably = new Ably.Realtime('YOURABLYKEY');
+const ably = new Ably.Realtime('bUKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4')
 
-const channel = ably.channels.get("vmix-hora");
+const channel = ably.channels.get("vmix-hora")
 
-let interval;
-let cycleTimer;
+let running=false
+let frequency=30
 
-let cycles = 0;
-let frequencyMinutes = 30;
+let timerBlock
+let timerClock
 
-let targetTime;
-let currentTime;
+let currentTime
+let targetTime
 
 
 
 async function getServerTime(){
 
-const response = await fetch("apiapilinkurl");
+const r=await fetch("apiapilinkurl")
+const d=await r.json()
 
-const data = await response.json();
+currentTime=new Date(d.datetime)
+targetTime=new Date(currentTime)
 
-currentTime = new Date(data.datetime);
-
-targetTime = new Date(currentTime);
-
-targetTime.setHours(16,0,0,0);
+targetTime.setHours(16,0,0,0)
 
 }
 
 
 
-function updateCountdown(){
+function updateClock(){
 
-const diff = targetTime - currentTime;
+const diff=targetTime-currentTime
 
 if(diff<=0){
-
-document.getElementById("countTextBottom").innerText="00:00:00";
-
-return;
-
+document.getElementById("countTextBottom").innerText="00:00:00"
+return
 }
 
-const h=Math.floor(diff/3600000);
-const m=Math.floor((diff%3600000)/60000);
-const s=Math.floor((diff%60000)/1000);
+const h=Math.floor(diff/3600000)
+const m=Math.floor((diff%3600000)/60000)
+const s=Math.floor((diff%60000)/1000)
 
 document.getElementById("countTextBottom").innerText =
 String(h).padStart(2,'0')+":"+
 String(m).padStart(2,'0')+":"+
-String(s).padStart(2,'0');
+String(s).padStart(2,'0')
 
-currentTime = new Date(currentTime.getTime()+1000);
+currentTime=new Date(currentTime.getTime()+1000)
 
 }
 
 
 
 function startClock(){
-
-interval = setInterval(updateCountdown,1000);
-
+timerClock=setInterval(updateClock,1000)
 }
 
 
 
 function showCountdown(){
 
-const box=document.getElementById("countBox");
+const box=document.getElementById("countBox")
 
-box.style.transition="width 0.7s ease, opacity 0.5s";
-
-box.style.opacity=1;
-
-box.style.width="520px";
+box.style.opacity=1
+box.style.width="520px"
 
 }
 
@@ -80,11 +70,10 @@ box.style.width="520px";
 
 function hideCountdown(){
 
-const box=document.getElementById("countBox");
+const box=document.getElementById("countBox")
 
-box.style.opacity=0;
-
-box.style.width="0px";
+box.style.opacity=0
+box.style.width="0px"
 
 }
 
@@ -92,11 +81,7 @@ box.style.width="0px";
 
 function showLogo(){
 
-const logo=document.getElementById("logoBox");
-
-logo.style.transition="opacity 0.5s";
-
-logo.style.opacity=1;
+document.getElementById("logoBox").style.opacity=1
 
 }
 
@@ -104,83 +89,71 @@ logo.style.opacity=1;
 
 function hideLogo(){
 
-const logo=document.getElementById("logoBox");
-
-logo.style.opacity=0;
+document.getElementById("logoBox").style.opacity=0
 
 }
 
 
 
-function runCycle(){
+function runBlock(){
 
-showCountdown();
+if(!running)return
+
+// contador 30s
+showCountdown()
 
 setTimeout(()=>{
 
-hideCountdown();
+hideCountdown()
+showLogo()
 
-showLogo();
+// logo 5s
+setTimeout(()=>{
+
+hideLogo()
+
+},5000)
+
+},30000)
+
+
+// segundo contador
+setTimeout(()=>{
+
+showCountdown()
 
 setTimeout(()=>{
 
-hideLogo();
-
-},5000);
-
-},30000);
-
-cycles++;
-
-if(cycles>=2){
-
-clearInterval(cycleTimer);
+hideCountdown()
+showLogo()
 
 setTimeout(()=>{
 
-cycles=0;
+hideLogo()
 
-cycleTimer=setInterval(runCycle,frequencyMinutes*60000);
+},5000)
 
-runCycle();
+},30000)
 
-},frequencyMinutes*60000);
-
-}
+},35000)
 
 }
 
 
 
-channel.subscribe(function(msg){
+async function startSystem(freq){
 
-if(msg.data.type==="on"){
+frequency=freq
 
-frequencyMinutes = msg.data.freq;
+running=true
 
-startSystem();
+await getServerTime()
 
-}
+startClock()
 
-if(msg.data.type==="off"){
+runBlock()
 
-stopSystem();
-
-}
-
-});
-
-
-
-async function startSystem(){
-
-await getServerTime();
-
-startClock();
-
-runCycle();
-
-cycleTimer = setInterval(runCycle,frequencyMinutes*60000);
+timerBlock=setInterval(runBlock,frequency*60000)
 
 }
 
@@ -188,12 +161,26 @@ cycleTimer = setInterval(runCycle,frequencyMinutes*60000);
 
 function stopSystem(){
 
-clearInterval(interval);
+running=false
 
-clearInterval(cycleTimer);
+clearInterval(timerClock)
+clearInterval(timerBlock)
 
-hideCountdown();
-
-hideLogo();
+hideCountdown()
+hideLogo()
 
 }
+
+
+
+channel.subscribe("control",function(msg){
+
+if(msg.data.state=="on"){
+startSystem(msg.data.freq)
+}
+
+if(msg.data.state=="off"){
+stopSystem()
+}
+
+})
