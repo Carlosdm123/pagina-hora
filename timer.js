@@ -1,17 +1,9 @@
-const counter = document.getElementById("counter");
-const logo = document.getElementById("logoBox");
-const box = document.getElementById("box");
-
-let repeatMinutes = 10;
-
-let blockTimer=null;
-let repeatTimer=null;
-
-let running=false;
+const counter=document.getElementById("counter");
+const box=document.getElementById("box");
 
 let bogotaOffset=0;
 
-async function syncBogotaTime(){
+async function syncBogota(){
 
 try{
 
@@ -31,7 +23,7 @@ bogotaOffset=0;
 
 }
 
-function getBogota(){
+function bogotaNow(){
 
 return new Date(Date.now()+bogotaOffset);
 
@@ -39,7 +31,7 @@ return new Date(Date.now()+bogotaOffset);
 
 function updateCounter(){
 
-const now=getBogota();
+const now=bogotaNow();
 
 const target=new Date(now);
 
@@ -64,92 +56,16 @@ String(s).padStart(2,"0");
 
 setInterval(updateCounter,1000);
 
-function showCounter(){
+function showTimer(){
 
 box.style.opacity=1;
 
-logo.style.opacity=0;
-counter.style.opacity=1;
-
 }
 
-function showLogo(){
-
-box.style.opacity=1;
-
-counter.style.opacity=0;
-logo.style.opacity=1;
-
-}
-
-function hideAll(){
+function hideTimer(){
 
 box.style.opacity=0;
 
 }
 
-function runBlock(){
-
-showCounter();
-
-blockTimer=setTimeout(()=>{
-
-showLogo();
-
-setTimeout(()=>{
-
-showCounter();
-
-setTimeout(()=>{
-
-showLogo();
-
-scheduleNext();
-
-},30000);
-
-},5000);
-
-},30000);
-
-}
-
-function scheduleNext(){
-
-repeatTimer=setTimeout(()=>{
-
-runBlock();
-
-},repeatMinutes*60000);
-
-}
-
-function startSystem(){
-
-clearTimeout(blockTimer);
-clearTimeout(repeatTimer);
-
-running=true;
-
-runBlock();
-
-}
-
-function stopSystem(){
-
-running=false;
-
-clearTimeout(blockTimer);
-clearTimeout(repeatTimer);
-
-hideAll();
-
-}
-
-function updateFrequency(m){
-
-repeatMinutes=m;
-
-}
-
-syncBogotaTime();
+syncBogota();
