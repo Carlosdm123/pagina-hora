@@ -36,9 +36,13 @@ channel.subscribe("control",(msg)=>{
 
 const data = msg.data;
 
-if(data.action==="on") showTimer();
+if(data.action==="on"){
+document.getElementById("box").style.opacity=1;
+}
 
-if(data.action==="off") hideTimer();
+if(data.action==="off"){
+document.getElementById("box").style.opacity=0;
+}
 
 });
 
