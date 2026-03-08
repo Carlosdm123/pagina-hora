@@ -60,7 +60,6 @@ timerClock=setInterval(updateClock,1000)
 function showCountdown(){
 
 const box=document.getElementById("countBox")
-
 box.style.opacity=1
 box.style.width="520px"
 
@@ -71,7 +70,6 @@ box.style.width="520px"
 function hideCountdown(){
 
 const box=document.getElementById("countBox")
-
 box.style.opacity=0
 box.style.width="0px"
 
@@ -80,17 +78,13 @@ box.style.width="0px"
 
 
 function showLogo(){
-
 document.getElementById("logoBox").style.opacity=1
-
 }
 
 
 
 function hideLogo(){
-
 document.getElementById("logoBox").style.opacity=0
-
 }
 
 
@@ -99,7 +93,7 @@ function runBlock(){
 
 if(!running)return
 
-// contador 30s
+// contador
 showCountdown()
 
 setTimeout(()=>{
@@ -107,7 +101,6 @@ setTimeout(()=>{
 hideCountdown()
 showLogo()
 
-// logo 5s
 setTimeout(()=>{
 
 hideLogo()
@@ -144,7 +137,6 @@ hideLogo()
 async function startSystem(freq){
 
 frequency=freq
-
 running=true
 
 await getServerTime()
@@ -173,7 +165,8 @@ hideLogo()
 
 
 
-channel.subscribe("control",function(msg){
+// 🔵 AQUÍ ESCUCHA EL EVENTO
+channel.subscribe("horaControl", function(msg){
 
 if(msg.data.state=="on"){
 startSystem(msg.data.freq)
