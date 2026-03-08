@@ -9,206 +9,42 @@
 
 <body>
 
-<div id="countBox">
+<div id="box">
 
 <div id="title">
 CIERRE DE VOTACIONES EN
 </div>
 
-<div id="time">
+<div id="counter">
 00:00:00
-</div>
-
 </div>
 
 <div id="logoBox">
 <img src="assets/logo.png">
 </div>
 
+</div>
+
+<script src="timer.js"></script>
+
 <script>
 
-const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4")
-const channel = ably.channels.get("vmix-hora")
+const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4");
+const channel = ably.channels.get("vmix-hora");
 
-let running=false
-let frequency=30
-let timer
-let clockTimer
+channel.subscribe((msg)=>{
 
-let currentTime
-let targetTime
+const data = msg.data;
 
-async function getTime(){
+if(data.action==="on") startSystem();
 
-const r = await fetch("https://worldtimeapi.org/api/timezone/America/Bogota")
-const d = await r.json()
+if(data.action==="off") stopSystem();
 
-currentTime = new Date(d.datetime)
+if(data.action==="freq") updateFrequency(data.minutes);
 
-targetTime = new Date(currentTime)
-targetTime.setHours(16,0,0,0)
-
-}
-
-function updateClock(){
-
-const diff = targetTime - currentTime
-
-if(diff<=0){
-document.getElementById("time").innerText="00:00:00"
-return
-}
-
-const h=Math.floor(diff/3600000)
-const m=Math.floor((diff%3600000)/60000)
-const s=Math.floor((diff%60000)/1000)
-
-document.getElementById("time").innerText =
-String(h).padStart(2,"0")+":"+
-String(m).padStart(2,"0")+":"+
-String(s).padStart(2,"0")
-
-currentTime = new Date(currentTime.getTime()+1000)
-
-}
-
-function startClock(){
-
-updateClock()
-clockTimer=setInterval(updateClock,1000)
-
-}
-
-function showCountdown(){
-
-const box=document.getElementById("countBox")
-
-box.style.opacity="1"
-box.style.width="520px"
-
-}
-
-function hideCountdown(){
-
-const box=document.getElementById("countBox")
-
-box.style.opacity="0"
-box.style.width="0px"
-
-}
-
-function showLogo(){
-
-document.getElementById("logoBox").style.opacity="1"
-
-}
-
-function hideLogo(){
-
-document.getElementById("logoBox").style.opacity="0"
-
-}
-
-function runBlock(){
-
-if(!running)return
-
-showCountdown()
-
-setTimeout(()=>{
-
-hideCountdown()
-showLogo()
-
-setTimeout(()=>{
-
-hideLogo()
-
-},5000)
-
-},30000)
-
-setTimeout(()=>{
-
-showCountdown()
-
-setTimeout(()=>{
-
-hideCountdown()
-showLogo()
-
-setTimeout(()=>{
-
-hideLogo()
-
-scheduleNext()
-
-},5000)
-
-},30000)
-
-},35000)
-
-}
-
-function scheduleNext(){
-
-timer=setTimeout(()=>{
-
-runBlock()
-
-},frequency*60000)
-
-}
-
-async function startSystem(freq){
-
-frequency=freq
-
-running=true
-
-await getTime()
-
-startClock()
-
-runBlock()
-
-}
-
-function stopSystem(){
-
-running=false
-
-clearInterval(clockTimer)
-
-clearTimeout(timer)
-
-hideCountdown()
-
-hideLogo()
-
-}
-
-channel.subscribe("hora",(message)=>{
-
-const data=message.data
-
-if(data.action==="on"){
-startSystem(data.freq)
-}
-
-if(data.action==="off"){
-stopSystem()
-}
-
-if(data.action==="freq"){
-frequency=data.freq
-}
-
-})
+});
 
 </script>
 
 </body>
-
 </html>
