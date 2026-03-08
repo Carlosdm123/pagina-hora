@@ -18,7 +18,6 @@ let animating=false
 async function getServerTime(){
 
 const r=await fetch("https://worldtimeapi.org/api/timezone/America/Bogota")
-
 const d=await r.json()
 
 currentTime=new Date(d.datetime)
@@ -111,8 +110,6 @@ animating=true
 
 
 
-// contador 1
-
 showCountdown()
 
 setTimeout(()=>{
@@ -129,8 +126,6 @@ hideLogo()
 },30000)
 
 
-
-// contador 2
 
 setTimeout(()=>{
 
@@ -183,8 +178,6 @@ await getServerTime()
 
 startClock()
 
-// animación inmediata
-
 runBlock()
 
 }
@@ -223,9 +216,9 @@ scheduleNext()
 
 
 
-channel.subscribe("update", function(message){
+channel.subscribe("hora",(message)=>{
 
-const data = message.data
+const data=message.data
 
 if(data.action==="on"){
 startSystem(data.freq)
