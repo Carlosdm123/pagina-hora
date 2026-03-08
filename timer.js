@@ -1,25 +1,22 @@
-const counter = document.getElementById("counter");
-const box = document.getElementById("box");
+const counter=document.getElementById("counter");
 
-let bogotaOffset = 0;
-
-/* sincroniza hora de bogotá */
+let bogotaOffset=0;
 
 async function syncBogota(){
 
 try{
 
-const r = await fetch("https://worldtimeapi.org/api/timezone/America/Bogota");
-const j = await r.json();
+const r=await fetch("https://worldtimeapi.org/api/timezone/America/Bogota");
+const j=await r.json();
 
-const server = new Date(j.datetime).getTime();
-const local = Date.now();
+const server=new Date(j.datetime).getTime();
+const local=Date.now();
 
-bogotaOffset = server - local;
+bogotaOffset=server-local;
 
 }catch(e){
 
-bogotaOffset = 0;
+bogotaOffset=0;
 
 }
 
@@ -27,58 +24,37 @@ updateCounter();
 
 }
 
-/* hora bogotá */
-
 function bogotaNow(){
 
-return new Date(Date.now() + bogotaOffset);
+return new Date(Date.now()+bogotaOffset);
 
 }
 
-/* contador */
-
 function updateCounter(){
 
-const now = bogotaNow();
+const now=bogotaNow();
 
-const target = new Date(now);
+const target=new Date(now);
 
 target.setHours(16);
 target.setMinutes(0);
 target.setSeconds(0);
 
-let diff = target - now;
+let diff=target-now;
 
-if(diff < 0) diff = 0;
+if(diff<0) diff=0;
 
-const h = Math.floor(diff / 3600000);
-const m = Math.floor((diff % 3600000) / 60000);
-const s = Math.floor((diff % 60000) / 1000);
+const h=Math.floor(diff/3600000);
+const m=Math.floor((diff%3600000)/60000);
+const s=Math.floor((diff%60000)/1000);
 
-counter.innerText =
+counter.innerText=
 String(h).padStart(2,"0")+":"+
 String(m).padStart(2,"0")+":"+
 String(s).padStart(2,"0");
 
 }
 
-/* actualización constante */
-
 setInterval(updateCounter,1000);
-
-/* funciones globales para el overlay */
-
-window.showTimer = function(){
-
-updateCounter();
-box.style.opacity = 1;
-
-}
-
-window.hideTimer = function(){
-
-box.style.opacity = 0;
-
-}
 
 syncBogota();
