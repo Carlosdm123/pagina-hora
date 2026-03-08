@@ -3,8 +3,11 @@
 
 <head>
 <meta charset="UTF-8">
+
 <link rel="stylesheet" href="style.css">
+
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+
 </head>
 
 <body>
@@ -25,9 +28,87 @@ CIERRE DE VOTACIONES EN
 
 </div>
 
-<script src="timer.js"></script>
-
 <script>
+
+const counter = document.getElementById("counter");
+const box = document.getElementById("box");
+
+let bogotaOffset = 0;
+
+/* ---------- SINCRONIZAR HORA BOGOTA ---------- */
+
+async function syncBogotaTime(){
+
+try{
+
+const r = await fetch("https://worldtimeapi.org/api/timezone/America/Bogota");
+const j = await r.json();
+
+const server = new Date(j.datetime).getTime();
+const local = Date.now();
+
+bogotaOffset = server - local;
+
+}catch(e){
+
+bogotaOffset = 0;
+
+}
+
+}
+
+function getBogota(){
+
+return new Date(Date.now() + bogotaOffset);
+
+}
+
+/* ---------- ACTUALIZAR CONTADOR ---------- */
+
+function updateCounter(){
+
+const now = getBogota();
+
+const target = new Date(now);
+
+target.setHours(16);
+target.setMinutes(0);
+target.setSeconds(0);
+
+let diff = target - now;
+
+if(diff < 0) diff = 0;
+
+const h = Math.floor(diff / 3600000);
+const m = Math.floor((diff % 3600000) / 60000);
+const s = Math.floor((diff % 60000) / 1000);
+
+counter.innerText =
+String(h).padStart(2,"0")+":"+
+String(m).padStart(2,"0")+":"+
+String(s).padStart(2,"0");
+
+}
+
+setInterval(updateCounter,1000);
+
+/* ---------- CONTROL VISIBILIDAD ---------- */
+
+function startSystem(){
+
+updateCounter(); // aparece inmediatamente
+
+box.style.opacity = 1;
+
+}
+
+function stopSystem(){
+
+box.style.opacity = 0;
+
+}
+
+/* ---------- ABLY ---------- */
 
 const ably = new Ably.Realtime({
 key:"bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4",
@@ -35,6 +116,12 @@ recover:true
 });
 
 const channel = ably.channels.get("vmix-hora");
+
+ably.connection.on(state=>{
+
+console.log("Ably:",state.current);
+
+});
 
 channel.subscribe("control",(msg)=>{
 
@@ -46,7 +133,12 @@ if(data.action === "off") stopSystem();
 
 });
 
+/* ---------- INIT ---------- */
+
+syncBogotaTime();
+
 </script>
 
 </body>
+
 </html>
