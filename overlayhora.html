@@ -34,7 +34,7 @@ const channel = ably.channels.get("vmix-hora");
 
 channel.subscribe("control",(msg)=>{
 
-const data=msg.data;
+const data = msg.data;
 
 if(data.action==="on") showTimer();
 
