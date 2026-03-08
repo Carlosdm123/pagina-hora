@@ -11,6 +11,8 @@ let timerClock
 let currentTime
 let targetTime
 
+let animating=false
+
 
 
 async function getServerTime(){
@@ -93,6 +95,8 @@ function runBlock(){
 
 if(!running)return
 
+animating=true
+
 // contador
 showCountdown()
 
@@ -110,7 +114,9 @@ hideLogo()
 },30000)
 
 
+
 // segundo contador
+
 setTimeout(()=>{
 
 showCountdown()
@@ -124,11 +130,28 @@ setTimeout(()=>{
 
 hideLogo()
 
+animating=false
+scheduleNext()
+
 },5000)
 
 },30000)
 
 },35000)
+
+}
+
+
+
+function scheduleNext(){
+
+if(!running)return
+
+timerBlock=setTimeout(()=>{
+
+runBlock()
+
+},frequency*60000)
 
 }
 
@@ -145,8 +168,6 @@ startClock()
 
 runBlock()
 
-timerBlock=setInterval(runBlock,frequency*60000)
-
 }
 
 
@@ -156,7 +177,7 @@ function stopSystem(){
 running=false
 
 clearInterval(timerClock)
-clearInterval(timerBlock)
+clearTimeout(timerBlock)
 
 hideCountdown()
 hideLogo()
@@ -165,15 +186,33 @@ hideLogo()
 
 
 
-// 🔵 AQUÍ ESCUCHA EL EVENTO
-channel.subscribe("horaControl", function(msg){
+function updateFrequency(newFreq){
 
-if(msg.data.state=="on"){
+frequency=newFreq
+
+if(!animating){
+
+clearTimeout(timerBlock)
+scheduleNext()
+
+}
+
+}
+
+
+
+channel.subscribe("horaControl",function(msg){
+
+if(msg.data.type=="on"){
 startSystem(msg.data.freq)
 }
 
-if(msg.data.state=="off"){
+if(msg.data.type=="off"){
 stopSystem()
+}
+
+if(msg.data.type=="freq"){
+updateFrequency(msg.data.freq)
 }
 
 })
