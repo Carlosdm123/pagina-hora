@@ -130,11 +130,11 @@ toggle.addEventListener("change",()=>{
 
 if(toggle.checked){
 
-channel.publish({action:"on"});
+channel.publish("control",{action:"on"});
 
 }else{
 
-channel.publish({action:"off"});
+channel.publish("control",{action:"off"});
 
 }
 
@@ -144,7 +144,7 @@ function setFreq(){
 
 const min = Number(document.getElementById("minutes").value);
 
-channel.publish({
+channel.publish("control",{
 action:"freq",
 minutes:min
 });
