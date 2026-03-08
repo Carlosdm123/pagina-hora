@@ -19,6 +19,10 @@ CIERRE DE VOTACIONES EN
 00:00:00
 </div>
 
+<div id="logoBox">
+<img src="assets/logo.png">
+</div>
+
 </div>
 
 <script src="timer.js"></script>
@@ -32,13 +36,19 @@ recover:true
 
 const channel = ably.channels.get("vmix-hora");
 
+ably.connection.on(state=>{
+console.log("Ably:",state.current);
+});
+
 channel.subscribe("control",(msg)=>{
 
-const data = msg.data;
+const data=msg.data;
 
-if(data.action==="on") showTimer();
+if(data.action==="on") startSystem();
 
-if(data.action==="off") hideTimer();
+if(data.action==="off") stopSystem();
+
+if(data.action==="freq") updateFrequency(data.minutes);
 
 });
 
