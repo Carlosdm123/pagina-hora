@@ -29,12 +29,20 @@ CIERRE DE VOTACIONES EN
 
 <script>
 
-const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4");
+const ably = new Ably.Realtime({
+key:"bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4",
+recover:true
+});
+
 const channel = ably.channels.get("vmix-hora");
+
+ably.connection.on(state=>{
+console.log("Ably:",state.current);
+});
 
 channel.subscribe("control",(msg)=>{
 
-const data = msg.data;
+const data=msg.data;
 
 if(data.action==="on") startSystem();
 
