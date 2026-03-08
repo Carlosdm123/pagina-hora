@@ -1,4 +1,4 @@
-const ably = new Ably.Realtime('bUKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4')
+const ably = new Ably.Realtime("bOKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4")
 
 const channel = ably.channels.get("vmix-hora")
 
@@ -62,6 +62,7 @@ timerClock=setInterval(updateClock,1000)
 function showCountdown(){
 
 const box=document.getElementById("countBox")
+
 box.style.opacity=1
 box.style.width="520px"
 
@@ -72,6 +73,7 @@ box.style.width="520px"
 function hideCountdown(){
 
 const box=document.getElementById("countBox")
+
 box.style.opacity=0
 box.style.width="0px"
 
@@ -97,7 +99,8 @@ if(!running)return
 
 animating=true
 
-// contador
+// contador 1
+
 showCountdown()
 
 setTimeout(()=>{
@@ -115,7 +118,7 @@ hideLogo()
 
 
 
-// segundo contador
+// contador 2
 
 setTimeout(()=>{
 
@@ -131,6 +134,7 @@ setTimeout(()=>{
 hideLogo()
 
 animating=false
+
 scheduleNext()
 
 },5000)
@@ -160,6 +164,7 @@ runBlock()
 async function startSystem(freq){
 
 frequency=freq
+
 running=true
 
 await getServerTime()
@@ -177,22 +182,25 @@ function stopSystem(){
 running=false
 
 clearInterval(timerClock)
+
 clearTimeout(timerBlock)
 
 hideCountdown()
+
 hideLogo()
 
 }
 
 
 
-function updateFrequency(newFreq){
+function updateFrequency(freq){
 
-frequency=newFreq
+frequency=freq
 
 if(!animating){
 
 clearTimeout(timerBlock)
+
 scheduleNext()
 
 }
@@ -201,18 +209,22 @@ scheduleNext()
 
 
 
-channel.subscribe("horaControl",function(msg){
+// 🔵 AQUÍ LLEGA EL MENSAJE DE ABLY
 
-if(msg.data.type=="on"){
-startSystem(msg.data.freq)
+channel.subscribe("update", function(message){
+
+const data = message.data
+
+if(data.action==="on"){
+startSystem(data.freq)
 }
 
-if(msg.data.type=="off"){
+if(data.action==="off"){
 stopSystem()
 }
 
-if(msg.data.type=="freq"){
-updateFrequency(msg.data.freq)
+if(data.action==="freq"){
+updateFrequency(data.freq)
 }
 
 })
