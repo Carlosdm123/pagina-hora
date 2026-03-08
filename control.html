@@ -4,42 +4,65 @@
 <head>
 
 <meta charset="UTF-8">
-
 <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
 
 <style>
 
 body{
-
 font-family:Arial;
 background:#111;
 color:white;
 padding:40px;
-
 }
 
 #preview{
-
 width:640px;
 height:360px;
 border:2px solid #444;
 margin-bottom:30px;
-
 }
 
-button{
-
-font-size:20px;
-padding:10px 30px;
-margin-right:10px;
-
+.switch{
+position:relative;
+display:inline-block;
+width:60px;
+height:34px;
 }
 
-input{
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
 
-font-size:20px;
-width:80px;
+.slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+transition:.4s;
+}
 
+.slider:before{
+position:absolute;
+content:"";
+height:26px;
+width:26px;
+left:4px;
+bottom:4px;
+background:white;
+transition:.4s;
+}
+
+input:checked + .slider{
+background:#4CAF50;
+}
+
+input:checked + .slider:before{
+transform:translateX(26px);
 }
 
 </style>
@@ -48,15 +71,13 @@ width:80px;
 
 <body>
 
-<h2>CONTROL CONTADOR ELECCIONES</h2>
+<h2>CONTROL CONTADOR</h2>
 
 <iframe id="preview" src="overlayhora.html"></iframe>
 
-<br>
+<br><br>
 
-<label>
-Que salga el contador cada (minutos)
-</label>
+<label>Que salga el contador cada (minutos)</label>
 
 <br><br>
 
@@ -64,40 +85,37 @@ Que salga el contador cada (minutos)
 
 <br><br>
 
-<button onclick="start()">ON</button>
-
-<button onclick="stop()">OFF</button>
-
-
+<label class="switch">
+<input type="checkbox" id="toggle">
+<span class="slider"></span>
+</label>
 
 <script>
 
-const ably = new Ably.Realtime('YOURABLYKEY');
+const ably=new Ably.Realtime('bUKecA.F01Gsw:f6ccqlfGnZrnTbs9ZqERdlbn7AK9PwwCtsplaep_DL4')
 
-const channel = ably.channels.get("vmix-hora");
+const channel=ably.channels.get("vmix-hora")
 
-function start(){
+document.getElementById("toggle").addEventListener("change",function(){
 
-const freq=document.getElementById("freq").value;
+const freq=document.getElementById("freq").value
+
+if(this.checked){
 
 channel.publish("control",{
-
-type:"on",
+state:"on",
 freq:parseInt(freq)
+})
 
-});
-
-}
-
-function stop(){
+}else{
 
 channel.publish("control",{
-
-type:"off"
-
-});
+state:"off"
+})
 
 }
+
+})
 
 </script>
 
