@@ -15,21 +15,23 @@ async function syncBogotaTime(){
 
 try{
 
-const res = await fetch("https://worldtimeapi.org/api/timezone/America/Bogota");
-const data = await res.json();
+const r=await fetch("https://worldtimeapi.org/api/timezone/America/Bogota");
+const j=await r.json();
 
-const serverTime = new Date(data.datetime).getTime();
-const localTime = Date.now();
+const server=new Date(j.datetime).getTime();
+const local=Date.now();
 
-bogotaOffset = serverTime - localTime;
+bogotaOffset=server-local;
 
 }catch(e){
-bogotaOffset = 0;
-}
+
+bogotaOffset=0;
 
 }
 
-function getBogotaNow(){
+}
+
+function getBogota(){
 
 return new Date(Date.now()+bogotaOffset);
 
@@ -37,23 +39,23 @@ return new Date(Date.now()+bogotaOffset);
 
 function updateCounter(){
 
-const now = getBogotaNow();
+const now=getBogota();
 
-const target = new Date(now);
+const target=new Date(now);
 
 target.setHours(16);
 target.setMinutes(0);
 target.setSeconds(0);
 
-let diff = target - now;
+let diff=target-now;
 
-if(diff < 0) diff = 0;
+if(diff<0) diff=0;
 
-const h = Math.floor(diff/3600000);
-const m = Math.floor(diff%3600000/60000);
-const s = Math.floor(diff%60000/1000);
+const h=Math.floor(diff/3600000);
+const m=Math.floor((diff%3600000)/60000);
+const s=Math.floor((diff%60000)/1000);
 
-counter.innerText =
+counter.innerText=
 String(h).padStart(2,"0")+":"+
 String(m).padStart(2,"0")+":"+
 String(s).padStart(2,"0");
@@ -64,17 +66,19 @@ setInterval(updateCounter,1000);
 
 function showCounter(){
 
+box.style.opacity=1;
+
 logo.style.opacity=0;
 counter.style.opacity=1;
-box.style.opacity=1;
 
 }
 
 function showLogo(){
 
+box.style.opacity=1;
+
 counter.style.opacity=0;
 logo.style.opacity=1;
-box.style.opacity=1;
 
 }
 
@@ -122,7 +126,8 @@ runBlock();
 
 function startSystem(){
 
-if(running) return;
+clearTimeout(blockTimer);
+clearTimeout(repeatTimer);
 
 running=true;
 
@@ -141,9 +146,9 @@ hideAll();
 
 }
 
-function updateFrequency(min){
+function updateFrequency(m){
 
-repeatMinutes=min;
+repeatMinutes=m;
 
 }
 
