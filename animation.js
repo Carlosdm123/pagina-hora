@@ -17,10 +17,12 @@ let animating=false
 
 async function getServerTime(){
 
-const r=await fetch("apiapilinkurl")
+const r=await fetch("https://worldtimeapi.org/api/timezone/America/Bogota")
+
 const d=await r.json()
 
 currentTime=new Date(d.datetime)
+
 targetTime=new Date(currentTime)
 
 targetTime.setHours(16,0,0,0)
@@ -54,7 +56,11 @@ currentTime=new Date(currentTime.getTime()+1000)
 
 
 function startClock(){
+
+updateClock()
+
 timerClock=setInterval(updateClock,1000)
+
 }
 
 
@@ -82,13 +88,17 @@ box.style.width="0px"
 
 
 function showLogo(){
+
 document.getElementById("logoBox").style.opacity=1
+
 }
 
 
 
 function hideLogo(){
+
 document.getElementById("logoBox").style.opacity=0
+
 }
 
 
@@ -98,6 +108,8 @@ function runBlock(){
 if(!running)return
 
 animating=true
+
+
 
 // contador 1
 
@@ -164,13 +176,15 @@ runBlock()
 async function startSystem(freq){
 
 frequency=freq
+
 running=true
 
 await getServerTime()
 
 startClock()
 
-// 🔵 DISPARA ANIMACIÓN INMEDIATA
+// animación inmediata
+
 runBlock()
 
 }
@@ -182,9 +196,11 @@ function stopSystem(){
 running=false
 
 clearInterval(timerClock)
+
 clearTimeout(timerBlock)
 
 hideCountdown()
+
 hideLogo()
 
 }
@@ -198,6 +214,7 @@ frequency=freq
 if(!animating){
 
 clearTimeout(timerBlock)
+
 scheduleNext()
 
 }
@@ -205,8 +222,6 @@ scheduleNext()
 }
 
 
-
-// escucha mensajes del controlador
 
 channel.subscribe("update", function(message){
 
