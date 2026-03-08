@@ -81,12 +81,6 @@ padding:8px 14px;
 cursor:pointer;
 }
 
-input[type=number]{
-padding:6px;
-width:80px;
-font-size:16px;
-}
-
 </style>
 
 </head>
@@ -106,22 +100,10 @@ font-size:16px;
 
 <div class="panel">
 
-<br>
-
 <label class="switch">
 <input type="checkbox" id="toggle">
 <span class="slider"></span>
 </label>
-
-<br><br>
-
-Intervalo (minutos)
-
-<br>
-
-<input type="number" id="minutes" value="10">
-
-<button onclick="setFreq()">Aceptar</button>
 
 </div>
 
@@ -149,14 +131,6 @@ channel.publish("control",{action:"off"});
 }
 
 });
-
-function setFreq(){
-
-const m=Number(document.getElementById("minutes").value);
-
-channel.publish("control",{action:"freq",minutes:m});
-
-}
 
 function openOverlay(){
 
